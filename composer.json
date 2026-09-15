@@ -1,0 +1,45 @@
+{
+    "name": "byerikas/eloquent-query-cache",
+    "description": "Query cache for Laravel Eloquent.",
+    "keywords": [
+        "laravel",
+        "eloquent",
+        "query",
+        "cache"
+    ],
+    "version": "0.0.1",
+    "license": "MIT",
+    "homepage": "https://github.com/byErikas/eloquent-query-cache",
+    "authors": [
+        {
+            "name": "byErikas",
+            "email": "erikasbystautas1@gmail.com"
+        }
+    ],
+    "require": {
+        "laravel/framework": "^13.0"
+    },
+    "require-dev": {
+        "chelout/laravel-relationship-events": "^5.0",
+        "orchestra/testbench": "^11.0",
+        "pestphp/pest": "^4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "ByErikas\\EloquentQueryCache\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "prefer-stable": true,
+    "minimum-stability": "stable"
+}
