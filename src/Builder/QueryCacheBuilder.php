@@ -67,6 +67,13 @@ class QueryCacheBuilder extends Builder
 		return $this;
 	}
 
+	public function cacheDriver(?string $driver = null): self
+	{
+		$this->cacheDriver = $driver;
+
+		return $this;
+	}
+
 	public function flushCache(array $tags = []): bool
 	{
 		$cache = $this->getCache($tags);

@@ -3,5 +3,50 @@
 namespace Tests;
 
 use Orchestra\Testbench\TestCase as BaseTestCase;
+use Illuminate\Contracts\Config\Repository;
+use Tests\Models\Item;
 
-abstract class TestCase extends BaseTestCase {}
+abstract class TestCase extends BaseTestCase
+{
+	public function setUp(): void
+	{
+		parent::setup();
+
+		$this->loadLaravelMigrations(["--database" => "sqlite"]);
+		$this->loadMigrationsFrom(__DIR__ . "/database/migrations");
+		$this->withFactories(__DIR__ . "/database/factories");
+	}
+
+	protected function defineEnvironment($app): void
+	{
+		tap($app["config"], function (Repository $config): void {
+			$config->set("app.key", "base64:6TshflJIHuaK4qQBMf3I5fnALXdH3n7IhLwh74mTKuw=");
+
+			$config->set("cache.default", "redis");
+			$config->set("cache.stores.redis", [
+				"driver"   => "redis",
+				"connection" => "default",
+				"lock_connection" => "default",
+			]);
+
+			$config->set("database.default", "sqlite");
+			$config->set("database.connections.sqlite", [
+				"driver" => "sqlite",
+				"database" => __DIR__ . "/database/db.sqlite",
+				"prefix" => "",
+			]);
+
+			$config->set("auth.providers.items.model", Item::class);
+		});
+	}
+
+	public function clearCache(): void
+	{
+		$this->artisan("cache:clear");
+	}
+
+	public function clearDatabase(): void
+	{
+		file_put_contents(__DIR__ . "/database/db.sqlite", null);
+	}
+}
