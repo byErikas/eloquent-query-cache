@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace ByErikas\EloquentQueryCache\Builder;
 
 use DateTimeInterface;
+use Illuminate\Cache\Repository;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Cache;
 
 class QueryCacheBuilder extends Builder
 {
@@ -32,7 +32,7 @@ class QueryCacheBuilder extends Builder
 	 */
 	protected ?string $cacheDriver = null;
 
-	public function get($columns = ["*"])
+	public function get($columns = ["*"]): Collection
 	{
 		if ($this->cacheFor !== null) {
 			return $this->getFromCache(Arr::wrap($columns));
@@ -105,7 +105,7 @@ class QueryCacheBuilder extends Builder
 		return hash("xxh128", "{$this->cachePrefix}:{$database}:{$sql}");
 	}
 
-	protected function getCache(?array $tags = null): Cache
+	protected function getCache(?array $tags = null): Repository
 	{
 		$cache = app("cache")->driver($this->cacheDriver);
 
