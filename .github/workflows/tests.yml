@@ -23,6 +23,18 @@ jobs:
         os: [ubuntu-latest]
         php: [8.4, 8.5]
         dependency-version: [prefer-lowest, prefer-stable]
+        services:
+    valkey:
+        image: valkey/valkey:latest
+        options: >-
+          --health-cmd "valkey-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+        env:
+          ALLOW_EMPTY_PASSWORD: "yes"
 
     name: PHP${{ matrix.php }} - ${{ matrix.dependency-version }} - ${{ matrix.os }}
     steps:
@@ -51,6 +63,11 @@ jobs:
 
       - name: Composer Update
         run: composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction
+
+      - name: Make .env
+        run: |
+          echo "REDIS_HOST=localhost" >> .env
+          echo "REDIS_PORT=6379" >> .env
 
       - name: Tests
         run: XDEBUG_MODE=coverage vendor/bin/pest --coverage --coverage-clover coverage.xml
