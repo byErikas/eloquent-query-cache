@@ -12,6 +12,9 @@ abstract class TestCase extends BaseTestCase
 	{
 		parent::setup();
 
+		/** Creates the database file */
+		$this->clearDatabase();
+
 		$this->loadLaravelMigrations(["--database" => "sqlite"]);
 		$this->loadMigrationsFrom(__DIR__ . "/database/migrations");
 		$this->withFactories(__DIR__ . "/database/factories");
