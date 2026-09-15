@@ -22,22 +22,21 @@ trait CanCacheQueries
 	protected ?array $cacheTags = null;
 
 	/**
-	 * Invalidate the cache automatically
-	 * upon update in the database.
+	 * Should the default cache observer be attached.
 	 */
-	protected static bool $flushCacheOnUpdate = true;
+	protected static bool $useDefaultCacheObserver = true;
 
 	public static function bootCanCacheQueries(): void
 	{
-		if (isset(static::$flushCacheOnUpdate) && static::$flushCacheOnUpdate) {
-			static::whenBooted(function (): void {
+		static::whenBooted(function (): void {
+			if (isset(static::$useDefaultCacheObserver) && static::$useDefaultCacheObserver) {
 				static::observe(QueryCacheObserver::class);
+			}
 
-				if (method_exists(static::class, "getQueryCacheObservers")) {
-					static::observe(static::getQueryCacheObservers());
-				}
-			});
-		}
+			if (method_exists(static::class, "getQueryCacheObservers")) {
+				static::observe(static::getQueryCacheObservers());
+			}
+		});
 	}
 
 	protected function getCacheTags(): array
