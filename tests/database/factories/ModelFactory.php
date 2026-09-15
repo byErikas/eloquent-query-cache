@@ -2,11 +2,17 @@
 
 declare(strict_types=1);
 
-use Illuminate\Support\Str;
-use Tests\Models\Item;
+namespace Tests\Database\Factories;
 
-$factory->define(Item::class, function (): array {
-	return [
-		"keyword" => "item-" . Str::uuid(),
-	];
-});
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
+
+class ItemFactory extends Factory
+{
+	public function definition(): array
+	{
+		return [
+			"keyword" => "item-" . Str::uuid(),
+		];
+	}
+}
