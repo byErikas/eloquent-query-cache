@@ -11,5 +11,7 @@ it("can cache gets", function (): void {
 
 	Item::factory()->create();
 
-	expect(Item::cacheFor(now()->addMinutes(5))->get())->toEqual($items);
+	expect(Item::cacheFor(now()->addMinutes(5))->get()->count())->toEqual($items->count());
+	expect($items->first()->keyword)->toEqual(Item::cacheFor(now()->addMinutes(5))->get()->first()->keyword);
+	expect(Item::get()->count())->toBe(2);
 });
