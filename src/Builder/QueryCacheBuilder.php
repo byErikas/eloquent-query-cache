@@ -1,0 +1,117 @@
+<?php
+
+declare(strict_types=1);
+
+namespace ByErikas\EloquentQueryCache\Builder;
+
+use DateTimeInterface;
+use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
+
+class QueryCacheBuilder extends Builder
+{
+	/**
+	 * Cache prefix.
+	 */
+	protected string $cachePrefix = "eqc";
+
+	/**
+	 * Cache duration.
+	 */
+	protected int|DateTimeInterface|null $cacheFor = null;
+
+	/**
+	 * Cache tags used.
+	 */
+	protected ?array $cacheTags = null;
+
+	/**
+	 * Cache driver used.
+	 */
+	protected ?string $cacheDriver = null;
+
+	public function get($columns = ["*"])
+	{
+		if ($this->cacheFor !== null) {
+			return $this->getFromCache(Arr::wrap($columns));
+		}
+
+		return parent::get($columns);
+	}
+
+	public function useWritePdo(): parent
+	{
+		return parent::useWritePdo();
+	}
+
+	public function cacheTags(?array $tags = null): self
+	{
+		$this->cacheTags = $tags;
+
+		return $this;
+	}
+
+	public function cacheFor(int|DateTimeInterface|null $cacheFor = null): self
+	{
+		$this->cacheFor = $cacheFor;
+
+		return $this;
+	}
+
+	public function cacheForever(): self
+	{
+		$this->cacheFor = -1;
+
+		return $this;
+	}
+
+	public function flushCache(array $tags = []): bool
+	{
+		$cache = $this->getCache($tags);
+
+		return $cache->flush();
+	}
+
+	protected function getFromCache(array $columns = ["*"]): Collection
+	{
+		$key = $this->getCacheKey();
+		$cache = $this->getCache();
+
+		if ($this->cacheFor instanceof DateTimeInterface || $this->cacheFor > 0) {
+			return $cache->remember($key, $this->cacheFor, function () use ($columns): Collection {
+				return parent::get($columns);
+			});
+		}
+
+		return $cache->rememberForever($key, function () use ($columns): Collection {
+			return parent::get($columns);
+		});
+	}
+
+	protected function getCacheKey(): string
+	{
+		$database = $this->connection->getDatabaseName();
+		$sql = $this->toRawSql();
+
+		return hash("xxh128", "{$this->cachePrefix}:{$database}:{$sql}");
+	}
+
+	protected function getCache(?array $tags = null): Cache
+	{
+		$cache = app("cache")->driver($this->cacheDriver);
+
+		if ($cache->supportsTags()) {
+			if ($tags === null) {
+				$tags = $this->cacheTags;
+			}
+
+			if (is_array($tags)) {
+				return $cache->tags($tags);
+			}
+		}
+
+		return $cache;
+	}
+}
