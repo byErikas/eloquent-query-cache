@@ -16,7 +16,7 @@ abstract class TestCase extends BaseTestCase
 		$this->clearDatabase();
 
 		$this->loadLaravelMigrations(["--database" => "sqlite"]);
-		$this->loadMigrationsFrom(__DIR__ . "/database/migrations");
+		$this->loadMigrationsFrom(__DIR__ . "/Database/Migrations");
 
 		$this->artisan("migrate", ["--database" => "sqlite"]);
 	}
@@ -51,6 +51,6 @@ abstract class TestCase extends BaseTestCase
 
 	public function clearDatabase(): void
 	{
-		file_put_contents(__DIR__ . "/database/db.sqlite", null);
+		file_put_contents(__DIR__ . "/Database/db.sqlite", null);
 	}
 }
