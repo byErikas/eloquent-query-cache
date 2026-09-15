@@ -23,8 +23,8 @@ jobs:
         os: [ubuntu-latest]
         php: [8.4, 8.5]
         dependency-version: [prefer-lowest, prefer-stable]
-        services:
-    valkey:
+    services:
+      valkey:
         image: valkey/valkey:latest
         options: >-
           --health-cmd "valkey-cli ping"
