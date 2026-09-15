@@ -56,10 +56,6 @@ trait CanCacheQueries
 		$grammar = $connection->getQueryGrammar();
 		$postProcessor = $connection->getPostProcessor();
 
-		if ($this->cacheFor === null) {
-			return new Builder($connection, $grammar, $postProcessor);
-		}
-
 		return new QueryCacheBuilder($connection, $grammar, $postProcessor)
 			->cacheFor($this->cacheFor)
 			->cacheTags($this->getCacheTags());
