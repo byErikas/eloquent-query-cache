@@ -39,7 +39,7 @@ trait CanCacheQueries
 		});
 	}
 
-	protected function getCacheTags(): array
+	public function getCacheTags(): array
 	{
 		$base = [$this->table];
 
