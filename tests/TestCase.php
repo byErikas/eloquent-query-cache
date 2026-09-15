@@ -36,7 +36,7 @@ abstract class TestCase extends BaseTestCase
 			$config->set("database.default", "sqlite");
 			$config->set("database.connections.sqlite", [
 				"driver" => "sqlite",
-				"database" => __DIR__ . "/database/db.sqlite",
+				"database" => __DIR__ . "/Database/db.sqlite",
 				"prefix" => "",
 			]);
 
