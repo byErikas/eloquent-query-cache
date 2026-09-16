@@ -25,7 +25,7 @@ it("can flush cache", function (): void {
 	Item::cacheFor(now()->addMinutes(5))->get();
 	Item::flushCache();
 
-	$cacheKey = $this->getSQLHash('select * from "items" where "items"."deleted_at" is null');
+	$cacheKey = $this->getSQLHash(Item::toRawSql());
 
 	expect(Cache::tags(["items"])->has($cacheKey))->toBeFalse();
 
