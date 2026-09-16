@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Tests\Database\Factories\ItemFactory;
+use Tests\Observers\TestObserver;
 
 #[UseFactory(ItemFactory::class)]
 class Item extends Model
@@ -19,4 +20,11 @@ class Item extends Model
 	protected $fillable = [
 		"keyword",
 	];
+
+	public static function getQueryCacheObservers(): array
+	{
+		return [
+			TestObserver::class
+		];
+	}
 }

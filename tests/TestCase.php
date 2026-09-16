@@ -39,8 +39,6 @@ abstract class TestCase extends BaseTestCase
 				"database" => __DIR__ . "/Database/db.sqlite",
 				"prefix" => "",
 			]);
-
-			$config->set("auth.providers.items.model", Item::class);
 		});
 	}
 

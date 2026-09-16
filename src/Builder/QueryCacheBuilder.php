@@ -23,9 +23,14 @@ class QueryCacheBuilder extends Builder
 	protected int|DateTimeInterface|null $cacheFor = null;
 
 	/**
-	 * Cache tags used.
+	 * Additional cache tags used.
 	 */
 	protected ?array $cacheTags = null;
+
+	/**
+	 * Base model cache tags used.
+	 */
+	protected ?array $cacheBaseTags = null;
 
 	/**
 	 * Cache driver used.
@@ -53,6 +58,13 @@ class QueryCacheBuilder extends Builder
 		return $this;
 	}
 
+	public function cacheBaseTags(?array $tags = null): self
+	{
+		$this->cacheBaseTags = $tags;
+
+		return $this;
+	}
+
 	public function cacheFor(int|DateTimeInterface|null $cacheFor = null): self
 	{
 		$this->cacheFor = $cacheFor;
@@ -76,12 +88,6 @@ class QueryCacheBuilder extends Builder
 
 	public function flushCache(array $tags = []): bool
 	{
-		if (!empty($tags)) {
-			$tags = array_unique(array_merge($this->cacheTags, $tags));
-		} else {
-			$tags = $this->cacheTags;
-		}
-
 		$cache = $this->getCache($tags);
 
 		return $cache->flush();
@@ -103,6 +109,21 @@ class QueryCacheBuilder extends Builder
 		});
 	}
 
+	protected function getCacheTags(?array $tags = null): array
+	{
+		$base = $this->cacheBaseTags;
+
+		if ($tags !== null) {
+			$base = array_unique(array_merge($base, $tags));
+		}
+
+		if ($this->cacheTags !== null) {
+			return array_unique(array_merge($base, $this->cacheTags));
+		}
+
+		return $base;
+	}
+
 	protected function getCacheKey(): string
 	{
 		$database = $this->connection->getDatabaseName();
@@ -116,15 +137,9 @@ class QueryCacheBuilder extends Builder
 		$cache = app("cache")->driver($this->cacheDriver);
 
 		if ($cache->supportsTags()) {
-			if ($tags === null) {
-				$tags = $this->cacheTags;
-			}
+			$tags = $this->getCacheTags($tags);
 
-			if ($tags !== null) {
-				$tags = Arr::wrap($tags);
-
-				return $cache->tags($tags);
-			}
+			return $cache->tags($tags);
 		}
 
 		return $cache;

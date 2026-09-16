@@ -12,12 +12,12 @@ use Illuminate\Database\Query\Builder;
 trait CanCacheQueries
 {
 	/**
-	 * Cache duration
+	 * Cache duration.
 	 */
 	protected int|DateTimeInterface|null $cacheFor = null;
 
 	/**
-	 * Cache tags used for element tagging
+	 * Additional cache tags used for model tagging.
 	 */
 	protected ?array $cacheTags = null;
 
@@ -39,12 +39,17 @@ trait CanCacheQueries
 		});
 	}
 
+	/**
+	 * Returns cache tags used for all cached queries of model.
+	 * 
+	 * Always includes the model's table, merged with the `$cacheTags` property.
+	 */
 	public function getCacheTags(): array
 	{
 		$base = [$this->getTable()];
 
 		if ($this->cacheTags !== null) {
-			return array_merge($base, $this->cacheTags);
+			return array_unique(array_merge($base, $this->cacheTags));
 		}
 
 		return $base;
@@ -57,7 +62,7 @@ trait CanCacheQueries
 		$postProcessor = $connection->getPostProcessor();
 
 		return new QueryCacheBuilder($connection, $grammar, $postProcessor)
-			->cacheFor($this->cacheFor)
-			->cacheTags($this->getCacheTags());
+			->cacheBaseTags($this->getCacheTags())
+			->cacheFor($this->cacheFor);
 	}
 }

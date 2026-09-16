@@ -19,7 +19,7 @@ class QueryCacheObserver implements ShouldHandleEventsAfterCommit
     /**
      * Handle the Model "saved" event.
      */
-    public function saved(Model $model)
+    public function saved(Model $model): void
     {
         $this->flushCache($model);
     }
@@ -27,7 +27,7 @@ class QueryCacheObserver implements ShouldHandleEventsAfterCommit
     /**
      * Handle the Model "deleted" event.
      */
-    public function deleted(Model $model)
+    public function deleted(Model $model): void
     {
         $this->flushCache($model);
     }
@@ -35,7 +35,7 @@ class QueryCacheObserver implements ShouldHandleEventsAfterCommit
     /**
      * Handle the Model "forceDeleted" event.
      */
-    public function forceDeleted(Model $model)
+    public function forceDeleted(Model $model): void
     {
         $this->flushCache($model);
     }
@@ -43,7 +43,7 @@ class QueryCacheObserver implements ShouldHandleEventsAfterCommit
     /**
      * Handle the Model "restored" event.
      */
-    public function restored(Model $model)
+    public function restored(Model $model): void
     {
         $this->flushCache($model);
     }
@@ -52,7 +52,7 @@ class QueryCacheObserver implements ShouldHandleEventsAfterCommit
      * Handle the Model "belongsToManyAttached" event.
      * See: https://github.com/chelout/laravel-relationship-events for implementation
      */
-    public function belongsToManyAttached(string $relation, Model $model, array $ids)
+    public function belongsToManyAttached(string $relation, Model $model, array $ids): void
     {
         $this->flushCache($model, $relation, $ids);
     }
@@ -61,7 +61,7 @@ class QueryCacheObserver implements ShouldHandleEventsAfterCommit
      * Handle the Model "belongsToManyDetached" event.
      * See: https://github.com/chelout/laravel-relationship-events for implementation
      */
-    public function belongsToManyDetached(string $relation, Model $model, array $ids)
+    public function belongsToManyDetached(string $relation, Model $model, array $ids): void
     {
         $this->flushCache($model, $relation, $ids);
     }
@@ -70,7 +70,7 @@ class QueryCacheObserver implements ShouldHandleEventsAfterCommit
      * Handle the Model "belongsToManyUpdatedExistingPivot" event.
      * See: https://github.com/chelout/laravel-relationship-events for implementation
      */
-    public function belongsToManyUpdatedExistingPivot(string $relation, Model $model, array $ids)
+    public function belongsToManyUpdatedExistingPivot(string $relation, Model $model, array $ids): void
     {
         $this->flushCache($model, $relation, $ids);
     }
@@ -79,7 +79,7 @@ class QueryCacheObserver implements ShouldHandleEventsAfterCommit
      * Handle the Model "morphToManyAttached" event.
      * See: https://github.com/chelout/laravel-relationship-events for implementation
      */
-    public function morphToManyAttached(string $relation, Model $model, array $ids)
+    public function morphToManyAttached(string $relation, Model $model, array $ids): void
     {
         $this->flushCache($model, $relation, $ids);
     }
@@ -88,7 +88,7 @@ class QueryCacheObserver implements ShouldHandleEventsAfterCommit
      * Handle the Model "morphToManyDetached" event.
      * See: https://github.com/chelout/laravel-relationship-events for implementation
      */
-    public function morphToManyDetached(string $relation, Model $model, array $ids)
+    public function morphToManyDetached(string $relation, Model $model, array $ids): void
     {
         $this->flushCache($model, $relation, $ids);
     }
@@ -97,7 +97,7 @@ class QueryCacheObserver implements ShouldHandleEventsAfterCommit
      * Handle the Model "morphToManyUpdatedExistingPivot" event.
      * See: https://github.com/chelout/laravel-relationship-events for implementation
      */
-    public function morphToManyUpdatedExistingPivot(string $relation, Model $model, array $ids)
+    public function morphToManyUpdatedExistingPivot(string $relation, Model $model, array $ids): void
     {
         $this->flushCache($model, $relation, $ids);
     }
