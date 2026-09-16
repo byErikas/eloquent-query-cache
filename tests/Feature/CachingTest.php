@@ -58,11 +58,11 @@ it("can flush cache", function (): void {
 
 	$cacheKey = $this->getSQLHash(Item::toRawSql());
 
-	expect(Cache::tags(["items"])->has($cacheKey))->toBeFalse();
+	expect(Cache::tags(["items", "extra-tag"])->has($cacheKey))->toBeFalse();
 
 	Item::cacheFor(now()->addMinutes(5))->get();
 
-	expect(Cache::tags(["items"])->has($cacheKey))->toBeTrue();
+	expect(Cache::tags(["items", "extra-tag"])->has($cacheKey))->toBeTrue();
 });
 
 it("can cache by multiple tags", function (): void {
@@ -75,7 +75,7 @@ it("can cache by multiple tags", function (): void {
 
 	$cacheKey = $this->getSQLHash(Item::toRawSql());
 
-	expect(Cache::tags(["items", "items-2"])->has($cacheKey))->toBeTrue();
+	expect(Cache::tags(["items", "extra-tag", "items-2"])->has($cacheKey))->toBeTrue();
 });
 
 it("can bypass using query cache when using writePdo", function (): void {

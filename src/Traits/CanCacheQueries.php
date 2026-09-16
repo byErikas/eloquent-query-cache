@@ -6,30 +6,14 @@ namespace ByErikas\EloquentQueryCache\Traits;
 
 use ByErikas\EloquentQueryCache\Builder\QueryCacheBuilder;
 use ByErikas\EloquentQueryCache\Observers\QueryCacheObserver;
-use DateTimeInterface;
 use Illuminate\Database\Query\Builder;
 
 trait CanCacheQueries
 {
-	/**
-	 * Cache duration.
-	 */
-	protected int|DateTimeInterface|null $cacheFor = null;
-
-	/**
-	 * Additional cache tags used for model tagging.
-	 */
-	protected ?array $cacheTags = null;
-
-	/**
-	 * Should the default cache observer be attached.
-	 */
-	protected static bool $useDefaultCacheObserver = true;
-
 	public static function bootCanCacheQueries(): void
 	{
 		static::whenBooted(function (): void {
-			if (isset(static::$useDefaultCacheObserver) && static::$useDefaultCacheObserver) {
+			if (!isset(static::$ignoreDefaultCacheObserver) || (isset(static::$ignoreDefaultCacheObserver) && static::$ignoreDefaultCacheObserver == false)) {
 				static::observe(QueryCacheObserver::class);
 			}
 
@@ -48,7 +32,7 @@ trait CanCacheQueries
 	{
 		$base = [$this->getTable()];
 
-		if ($this->cacheTags !== null) {
+		if (property_exists($this, "cacheTags") && $this->cacheTags !== null) {
 			return array_unique(array_merge($base, $this->cacheTags));
 		}
 
@@ -61,8 +45,13 @@ trait CanCacheQueries
 		$grammar = $connection->getQueryGrammar();
 		$postProcessor = $connection->getPostProcessor();
 
-		return new QueryCacheBuilder($connection, $grammar, $postProcessor)
-			->cacheBaseTags($this->getCacheTags())
-			->cacheFor($this->cacheFor);
+		$builder =  new QueryCacheBuilder($connection, $grammar, $postProcessor)
+			->cacheBaseTags($this->getCacheTags());
+
+		if (property_exists($this, "cacheFor")) {
+			$builder->cacheFor($this->cacheFor);
+		}
+
+		return $builder;
 	}
 }

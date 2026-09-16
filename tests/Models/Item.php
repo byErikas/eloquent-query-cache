@@ -21,6 +21,10 @@ class Item extends Model
 		"keyword",
 	];
 
+	protected static $ignoreDefaultCacheObserver = false;
+
+	protected array $cacheTags = ["extra-tag"];
+
 	public static function getQueryCacheObservers(): array
 	{
 		return [
