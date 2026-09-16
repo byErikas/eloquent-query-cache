@@ -20,7 +20,6 @@
         "laravel/framework": "^13.0"
     },
     "require-dev": {
-        "chelout/laravel-relationship-events": "^5.0",
         "orchestra/testbench": "^11.0",
         "pestphp/pest": "^4.0"
     },
