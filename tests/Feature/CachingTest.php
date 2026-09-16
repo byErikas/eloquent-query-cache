@@ -118,7 +118,6 @@ it("can bypass using query cache when using writePdo", function (): void {
 	expect(get_class($query))->toBe(QueryCacheBuilder::class);
 });
 
-
 it("can set cache driver, and retrieve from cache driver", function (): void {
 	Item::factory()->create();
 
@@ -131,4 +130,24 @@ it("can set cache driver, and retrieve from cache driver", function (): void {
 	expect(Item::cacheFor(now()->addMinute())->cacheDriver("array")->get()->count())->toBe($items->count());
 
 	expect(Item::cacheFor(now()->addMinute())->get()->count())->toBe(2);
+});
+
+it("can handle consecutive observer events", function (): void {
+	$item = Item::factory()->create();
+
+	$items = Item::cacheFor(now()->addMinute())->get();
+
+	expect(Item::cacheFor(now()->addMinute())->get()->count())->toBe($items->count());
+
+	$item->delete();
+
+	expect(Item::cacheFor(now()->addMinute())->get()->count())->toBe(0);
+
+	$item->restore();
+
+	expect(Item::cacheFor(now()->addMinute())->get()->count())->toBe(1);
+
+	$item->forceDelete();
+
+	expect(Item::cacheFor(now()->addMinute())->get()->count())->toBe(0);
 });
