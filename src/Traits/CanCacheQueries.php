@@ -41,7 +41,7 @@ trait CanCacheQueries
 
 	public function getCacheTags(): array
 	{
-		$base = [$this->table];
+		$base = [$this->getTable()];
 
 		if ($this->cacheTags !== null) {
 			return array_merge($base, $this->cacheTags);

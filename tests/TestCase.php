@@ -10,9 +10,9 @@ abstract class TestCase extends BaseTestCase
 {
 	protected function setUp(): void
 	{
-		parent::setup();
+		parent::setUp();
 
-		/** Creates the database file */
+		$this->clearCache();
 		$this->clearDatabase();
 
 		$this->loadLaravelMigrations(["--database" => "sqlite"]);
@@ -52,5 +52,12 @@ abstract class TestCase extends BaseTestCase
 	public function clearDatabase(): void
 	{
 		file_put_contents(__DIR__ . "/Database/db.sqlite", null);
+	}
+
+	public function getSQLHash(string $sql): string
+	{
+		$database = __DIR__ . "/Database/db.sqlite";
+
+		return "eqc:" . hash("xxh128", "{$database}:{$sql}");
 	}
 }

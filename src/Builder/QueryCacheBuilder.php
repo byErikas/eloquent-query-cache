@@ -76,6 +76,12 @@ class QueryCacheBuilder extends Builder
 
 	public function flushCache(array $tags = []): bool
 	{
+		if (!empty($tags)) {
+			$tags = array_unique(array_merge($this->cacheTags, $tags));
+		} else {
+			$tags = $this->cacheTags;
+		}
+
 		$cache = $this->getCache($tags);
 
 		return $cache->flush();
@@ -102,7 +108,7 @@ class QueryCacheBuilder extends Builder
 		$database = $this->connection->getDatabaseName();
 		$sql = $this->toRawSql();
 
-		return hash("xxh128", "{$this->cachePrefix}:{$database}:{$sql}");
+		return "{$this->cachePrefix}:" . hash("xxh128", "{$database}:{$sql}");
 	}
 
 	protected function getCache(?array $tags = null): Repository
@@ -114,7 +120,9 @@ class QueryCacheBuilder extends Builder
 				$tags = $this->cacheTags;
 			}
 
-			if (is_array($tags)) {
+			if ($tags !== null) {
+				$tags = Arr::wrap($tags);
+
 				return $cache->tags($tags);
 			}
 		}

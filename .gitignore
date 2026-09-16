@@ -1,0 +1,5 @@
+/vendor
+/compose
+composer.lock
+compose.yaml
+/tests/Database/db.sqlite
