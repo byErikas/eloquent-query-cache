@@ -55,8 +55,6 @@ class QueryCacheBuilder extends Builder
 	{
 		$this->cacheTags = $tags;
 
-		// dd($this);
-
 		return $this;
 	}
 
