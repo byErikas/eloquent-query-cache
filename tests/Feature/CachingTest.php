@@ -151,3 +151,11 @@ it("can handle consecutive observer events", function (): void {
 
 	expect(Item::cacheFor(now()->addMinute())->get()->count())->toBe(0);
 });
+
+it("can handle cache stores without tags", function (): void {
+	Item::factory()->create();
+
+	$items = Item::cacheTags(["items-2"])->cacheFor(now()->addMinute())->cacheDriver("file")->get();
+
+	expect(Item::cacheDriver("file")->cacheFor(now()->addMinute())->get()->count())->toBe($items->count());
+});
