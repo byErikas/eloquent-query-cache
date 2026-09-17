@@ -13,7 +13,7 @@ trait CanCacheQueries
 	public static function bootCanCacheQueries(): void
 	{
 		static::whenBooted(function (): void {
-			if (!isset(static::$ignoreDefaultCacheObserver) || (isset(static::$ignoreDefaultCacheObserver) && static::$ignoreDefaultCacheObserver == false)) {
+			if (!isset(static::$attachDefaultCacheObserver) || (isset(static::$attachDefaultCacheObserver) && static::$attachDefaultCacheObserver)) {
 				static::observe(QueryCacheObserver::class);
 			}
 

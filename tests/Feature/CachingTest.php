@@ -10,7 +10,6 @@ use Tests\Models\DefaultItem;
 it("can cache using model defaults", function (): void {
 	DefaultItem::factory()->create();
 
-	/** Cached forever, with extra tags */
 	$items = DefaultItem::get();
 
 	Model::withoutEvents(function (): void {

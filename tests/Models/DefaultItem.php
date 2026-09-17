@@ -21,7 +21,7 @@ class DefaultItem extends Model
 		"keyword",
 	];
 
-	protected static $ignoreDefaultCacheObserver = false;
+	protected static $attachDefaultCacheObserver = true;
 
 	protected int $cacheFor = -1;
 
