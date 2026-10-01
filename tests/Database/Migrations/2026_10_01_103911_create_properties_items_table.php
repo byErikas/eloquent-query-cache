@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
 	public function up(): void
 	{
-		Schema::create("default_items", function (Blueprint $table): void {
+		Schema::create("properties_items", function (Blueprint $table): void {
 			$table->id("id");
 			$table->string("keyword");
 			$table->timestamps();
@@ -24,6 +24,6 @@ return new class extends Migration {
 	 */
 	public function down(): void
 	{
-		Schema::dropIfExists("default_items");
+		Schema::dropIfExists("properties_items");
 	}
 };

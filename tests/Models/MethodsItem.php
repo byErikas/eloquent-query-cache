@@ -10,10 +10,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Tests\Database\Factories\ItemFactory;
-use Tests\Observers\TestObserver;
 
 #[UseFactory(ItemFactory::class)]
-class DefaultItem extends Model
+class MethodsItem extends Model
 {
 	use CanCacheQueries, SoftDeletes, HasFactory;
 
@@ -21,16 +20,20 @@ class DefaultItem extends Model
 		"keyword",
 	];
 
-	protected static $attachDefaultCacheObserver = true;
+	protected function getCacheFor(): int
+	{
+		return -1;
+	}
 
-	protected int $cacheFor = -1;
+	protected function getCacheDriver(): ?string
+	{
+		return null;
+	}
 
-	protected array $cacheBaseTags = ["extra-tag"];
-
-	public static function getQueryCacheObservers(): array
+	protected function getCacheTags(): array
 	{
 		return [
-			TestObserver::class
+			"extra-tag"
 		];
 	}
 }
