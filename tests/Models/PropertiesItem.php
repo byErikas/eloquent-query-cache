@@ -24,5 +24,7 @@ class PropertiesItem extends Model
 
 	protected int $cacheFor = -1;
 
-	protected array $cacheBaseTags = ["extra-tag"];
+	protected array $cacheTags = ["extra-tag"];
+
+	protected array $cacheBaseTags = ["extra-tag-base"];
 }
