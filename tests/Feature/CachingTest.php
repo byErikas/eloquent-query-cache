@@ -5,36 +5,52 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Tests\Models\Item;
 use Illuminate\Database\Eloquent\Builder;
-use Tests\Models\DefaultItem;
+use Tests\Models\MethodsItem;
+use Tests\Models\PropertiesItem;
+use Tests\Models\ObserversItem;
 
-it("can cache using model defaults", function (): void {
-	DefaultItem::factory()->create();
+it("can cache using model properties defaults", function (): void {
+	PropertiesItem::factory()->create();
 
-	$items = DefaultItem::get();
+	$items = PropertiesItem::get();
 
 	Model::withoutEvents(function (): void {
-		DefaultItem::factory()->create();
+		PropertiesItem::factory()->create();
 	});
 
-	expect(DefaultItem::get()->count())->toEqual($items->count());
-	expect($items->first()->keyword)->toEqual(DefaultItem::get()->first()->keyword);
-	expect(DefaultItem::cacheFor(null)->get()->count())->toBe(2);
+	expect(PropertiesItem::get()->count())->toEqual($items->count());
+	expect($items->first()->keyword)->toEqual(PropertiesItem::get()->first()->keyword);
+	expect(PropertiesItem::cacheFor(null)->get()->count())->toBe(2);
+});
+
+it("can cache using model methods defaults", function (): void {
+	MethodsItem::factory()->create();
+
+	$items = MethodsItem::get();
+
+	Model::withoutEvents(function (): void {
+		MethodsItem::factory()->create();
+	});
+
+	expect(MethodsItem::get()->count())->toEqual($items->count());
+	expect($items->first()->keyword)->toEqual(MethodsItem::get()->first()->keyword);
+	expect(MethodsItem::cacheFor(null)->get()->count())->toBe(2);
 });
 
 it("can flush cache using model defaults", function (): void {
-	DefaultItem::factory()->create();
+	MethodsItem::factory()->create();
 
 	/** Cached forever, with extra tags */
-	$items = DefaultItem::get();
+	$items = MethodsItem::get();
 
 	Model::withoutEvents(function (): void {
-		DefaultItem::factory()->create();
+		MethodsItem::factory()->create();
 	});
 
-	expect(DefaultItem::get()->count())->toEqual($items->count());
+	expect(MethodsItem::get()->count())->toEqual($items->count());
 
-	DefaultItem::flushCache();
-	expect(DefaultItem::get()->count())->toBe(2);
+	MethodsItem::flushCache();
+	expect(MethodsItem::get()->count())->toBe(2);
 });
 
 it("can cache for timeframe", function (): void {
@@ -132,23 +148,23 @@ it("can set cache driver, and retrieve from cache driver", function (): void {
 });
 
 it("can handle consecutive observer events", function (): void {
-	$item = Item::factory()->create();
+	$item = ObserversItem::factory()->create();
 
-	$items = Item::cacheFor(now()->addMinute())->get();
+	$items = ObserversItem::cacheFor(now()->addMinute())->get();
 
-	expect(Item::cacheFor(now()->addMinute())->get()->count())->toBe($items->count());
+	expect(ObserversItem::cacheFor(now()->addMinute())->get()->count())->toBe($items->count());
 
 	$item->delete();
 
-	expect(Item::cacheFor(now()->addMinute())->get()->count())->toBe(0);
+	expect(ObserversItem::cacheFor(now()->addMinute())->get()->count())->toBe(0);
 
 	$item->restore();
 
-	expect(Item::cacheFor(now()->addMinute())->get()->count())->toBe(1);
+	expect(ObserversItem::cacheFor(now()->addMinute())->get()->count())->toBe(1);
 
 	$item->forceDelete();
 
-	expect(Item::cacheFor(now()->addMinute())->get()->count())->toBe(0);
+	expect(ObserversItem::cacheFor(now()->addMinute())->get()->count())->toBe(0);
 });
 
 it("can handle cache stores without tags", function (): void {
@@ -173,4 +189,40 @@ it("can cache plucks", function (): void {
 
 	$keywordsUncached = Item::cacheFor(null)->pluck("keyword");
 	expect(count($keywordsUncached->all()))->toBe(2);
+});
+
+it("can cache exists temporarily", function (): void {
+	$item = Item::factory()->create();
+
+	$exists = Item::cacheFor(now()->addMinute())->exists();
+
+	expect($exists)->toBe(true);
+
+	Model::withoutEvents(function () use ($item): void {
+		$item->delete();
+	});
+
+	$exists = Item::cacheFor(now()->addMinute())->exists();
+	expect($exists)->toBe(true);
+
+	$exists = Item::cacheFor(null)->exists();
+	expect($exists)->toBe(false);
+});
+
+it("can cache exists forever", function (): void {
+	$item = Item::factory()->create();
+
+	$exists = Item::cacheForever()->exists();
+
+	expect($exists)->toBe(true);
+
+	Model::withoutEvents(function () use ($item): void {
+		$item->delete();
+	});
+
+	$exists = Item::cacheForever()->exists();
+	expect($exists)->toBe(true);
+
+	$exists = Item::cacheFor(null)->exists();
+	expect($exists)->toBe(false);
 });

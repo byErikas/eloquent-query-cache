@@ -4,7 +4,6 @@ namespace Tests;
 
 use Orchestra\Testbench\TestCase as BaseTestCase;
 use Illuminate\Contracts\Config\Repository;
-use Tests\Models\Item;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -56,6 +55,6 @@ abstract class TestCase extends BaseTestCase
 	{
 		$database = __DIR__ . "/Database/db.sqlite";
 
-		return "eqc:" . hash("xxh128", "{$database}:{$sql}");
+		return "eqc:{$database}:" . hash("xxh128", $sql);
 	}
 }

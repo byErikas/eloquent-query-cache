@@ -52,9 +52,9 @@ class QueryCacheObserver implements ShouldHandleEventsAfterCommit
      * Invalidate the cache.
      * @throws Exception
      */
-    protected function flushCache(Model $model, ?string $relation = null, ?array $ids = null): void
+    protected function flushCache(Model $model): void
     {
-        $tags = $model->getCacheTags();
+        $tags = $model->getCacheBaseTags();
 
         $model::flushCache($tags);
     }

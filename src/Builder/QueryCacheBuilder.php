@@ -7,8 +7,6 @@ namespace ByErikas\EloquentQueryCache\Builder;
 use DateTimeInterface;
 use Illuminate\Cache\Repository;
 use Illuminate\Database\Query\Builder;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Collection;
 
 class QueryCacheBuilder extends Builder
 {
@@ -36,6 +34,15 @@ class QueryCacheBuilder extends Builder
 	 * Cache driver used.
 	 */
 	protected ?string $cacheDriver = null;
+
+	public function exists(): bool
+	{
+		if ($this->cacheFor !== null) {
+			return $this->existsFromCache();
+		}
+
+		return parent::exists();
+	}
 
 	protected function runSelect(): array
 	{
@@ -93,6 +100,22 @@ class QueryCacheBuilder extends Builder
 		return $cache->flush();
 	}
 
+	protected function existsFromCache(): bool
+	{
+		$key = $this->getCacheKey();
+		$cache = $this->getCache();
+
+		if ($this->cacheFor instanceof DateTimeInterface || $this->cacheFor > 0) {
+			return $cache->remember($key, $this->cacheFor, function (): bool {
+				return parent::exists();
+			});
+		}
+
+		return $cache->rememberForever($key, function (): bool {
+			return parent::exists();
+		});
+	}
+
 	protected function runSelectFromCache(): array
 	{
 		$key = $this->getCacheKey();
@@ -129,7 +152,7 @@ class QueryCacheBuilder extends Builder
 		$database = $this->connection->getDatabaseName();
 		$sql = $this->toRawSql();
 
-		return "{$this->cachePrefix}:" . hash("xxh128", "{$database}:{$sql}");
+		return "{$this->cachePrefix}:{$database}:" . hash("xxh128", $sql);
 	}
 
 	protected function getCache(?array $tags = null): Repository

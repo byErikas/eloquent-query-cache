@@ -26,17 +26,19 @@ trait CanCacheQueries
 	/**
 	 * Returns cache tags used for all cached queries of model.
 	 * 
-	 * Always includes the model's table, merged with the `$cacheTags` property.
+	 * Always includes the model's table, merged with the `$cacheBaseTags` property.
 	 */
-	public function getCacheTags(): array
+	public function getCacheBaseTags(): array
 	{
 		$base = [$this->getTable()];
 
-		if (property_exists($this, "cacheTags") && $this->cacheTags !== null) {
-			return array_unique(array_merge($base, $this->cacheTags));
+		$extra = [];
+
+		if (property_exists($this, "cacheBaseTags") && $this->cacheBaseTags !== null) {
+			$extra = $this->cacheBaseTags;
 		}
 
-		return $base;
+		return array_unique(array_merge($base, $extra));
 	}
 
 	protected function newBaseQueryBuilder(): Builder
@@ -45,11 +47,31 @@ trait CanCacheQueries
 		$grammar = $connection->getQueryGrammar();
 		$postProcessor = $connection->getPostProcessor();
 
-		$builder =  new QueryCacheBuilder($connection, $grammar, $postProcessor)
-			->cacheBaseTags($this->getCacheTags());
+		$builder = new QueryCacheBuilder($connection, $grammar, $postProcessor)
+			->cacheBaseTags($this->getCacheBaseTags());
 
 		if (property_exists($this, "cacheFor")) {
 			$builder->cacheFor($this->cacheFor);
+		}
+
+		if (property_exists($this, "cacheTags")) {
+			$builder->cacheTags($this->cacheTags);
+		}
+
+		if (property_exists($this, "cacheDriver")) {
+			$builder->cacheDriver($this->cacheDriver);
+		}
+
+		if (method_exists($this, "getCacheFor")) {
+			$builder->cacheFor($this->getCacheFor($builder));
+		}
+
+		if (method_exists($this, "getCacheTags")) {
+			$builder->cacheTags($this->getCacheTags($builder));
+		}
+
+		if (method_exists($this, "getCacheDriver")) {
+			$builder->cacheDriver($this->getCacheDriver($builder));
 		}
 
 		return $builder;
