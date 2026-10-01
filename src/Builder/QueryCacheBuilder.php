@@ -37,13 +37,13 @@ class QueryCacheBuilder extends Builder
 	 */
 	protected ?string $cacheDriver = null;
 
-	public function get($columns = ["*"]): Collection
+	protected function runSelect(): array
 	{
 		if ($this->cacheFor !== null) {
-			return $this->getFromCache(Arr::wrap($columns));
+			return $this->runSelectFromCache();
 		}
 
-		return parent::get($columns);
+		return parent::runSelect();
 	}
 
 	public function useWritePdo(): parent
@@ -93,19 +93,19 @@ class QueryCacheBuilder extends Builder
 		return $cache->flush();
 	}
 
-	protected function getFromCache(array $columns = ["*"]): Collection
+	protected function runSelectFromCache(): array
 	{
 		$key = $this->getCacheKey();
 		$cache = $this->getCache();
 
 		if ($this->cacheFor instanceof DateTimeInterface || $this->cacheFor > 0) {
-			return $cache->remember($key, $this->cacheFor, function () use ($columns): Collection {
-				return parent::get($columns);
+			return $cache->remember($key, $this->cacheFor, function (): array {
+				return parent::runSelect();
 			});
 		}
 
-		return $cache->rememberForever($key, function () use ($columns): Collection {
-			return parent::get($columns);
+		return $cache->rememberForever($key, function (): array {
+			return parent::runSelect();
 		});
 	}
 

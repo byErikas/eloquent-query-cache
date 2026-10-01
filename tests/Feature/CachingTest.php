@@ -158,3 +158,19 @@ it("can handle cache stores without tags", function (): void {
 
 	expect(Item::cacheDriver("file")->cacheFor(now()->addMinute())->get()->count())->toBe($items->count());
 });
+
+it("can cache plucks", function (): void {
+	Item::factory()->create();
+
+	$keywords = Item::cacheFor(now()->addMinute())->pluck("keyword");
+
+	Model::withoutEvents(function (): void {
+		Item::factory()->create();
+	});
+
+	$keywordsCached = Item::cacheFor(now()->addMinute())->pluck("keyword");
+	expect($keywords->all())->toEqual($keywordsCached->all());
+
+	$keywordsUncached = Item::cacheFor(null)->pluck("keyword");
+	expect(count($keywordsUncached->all()))->toBe(2);
+});
