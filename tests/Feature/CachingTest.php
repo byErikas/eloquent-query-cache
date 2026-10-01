@@ -174,3 +174,21 @@ it("can cache plucks", function (): void {
 	$keywordsUncached = Item::cacheFor(null)->pluck("keyword");
 	expect(count($keywordsUncached->all()))->toBe(2);
 });
+
+it("can cache exists", function (): void {
+	$item = Item::factory()->create();
+
+	$exists = Item::cacheFor(now()->addMinute())->exists();
+
+	expect($exists)->toBe(true);
+
+	Model::withoutEvents(function () use ($item): void {
+		$item->delete();
+	});
+
+	$exists = Item::cacheFor(now()->addMinute())->exists();
+	expect($exists)->toBe(true);
+
+	$exists = Item::cacheFor(null)->exists();
+	expect($exists)->toBe(false);
+});

@@ -25,7 +25,7 @@ class DefaultItem extends Model
 
 	protected int $cacheFor = -1;
 
-	protected array $cacheTags = ["extra-tag"];
+	protected array $cacheBaseTags = ["extra-tag"];
 
 	public static function getQueryCacheObservers(): array
 	{
